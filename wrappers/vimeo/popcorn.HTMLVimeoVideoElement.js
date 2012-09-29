@@ -1,4 +1,3 @@
-(function( Popcorn, window, document ) {
 
   var
 
