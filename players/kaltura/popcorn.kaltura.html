@@ -186,15 +186,16 @@
         }
 
         function capture(event) {
-          media_events[event.type] = media_events[event.type] + 1;
-          console.log(event.type);
-          for (key in media_events) {
-            var e = document.getElementById("e_" + key);
+          // grab the event detail ( not sure what popcorn is thinking here )
+          var type = event.detail ? event.detail.type : event.type;
+          media_events[type] = media_events[type] + 1;
+          console.log(type);
+            var e = document.getElementById("e_" + type);
             if (e) {
-              e.innerHTML = media_events[key];
-              if (media_events[key] > 0) e.className = "true";
+              e.innerHTML = media_events[type];
+              if (media_events[type] > 0) e.className = "true";
             }
-          }
+          // update media properties
           update_properties();
         }
 
@@ -241,14 +242,9 @@
     <div>
       <h3>Description</h3>
       <p>
-        This demo will showcase how a Kaltura flash video can be integrated into Popcorn. This  is done by making the flash video masquerade as HTML 5 video.<br />
-        Due to the Flash security model, this demo must be  run from a web server<br />
-      <hr >
-        Kaltura does not support their player to be chromeless (hidden controls), but custsom controls have been developed and tied into their player.<br />
-        Clicking play/pause or seeking in either the video or via custsom controls will cause the other to update.<br />
-        Clicking on the embed option in the Kaltura player while the video is playing will cause the video to pause and custom controls to update.<br />
-        The kaltura video can be specified in the HTML source by giving the kaltura web site url (http://player.kaltura.com/video/VIDEOID) to either the Popcorn.kaltura or as the iframe src attribute.<br/>
-      </p>
+        This demo will showcase how a Kaltura player can be integrated into Popcorn. 
+        This is done by exposing the kaltura html5 video tag to the popcorn html5 implementation
+        <br />
       <h4>Expected Events</h4>
       <ul>
         <li>From 5 to 40 seconds, the footnote 'The video is popcorn being Popped' will appear below 'Footnote Area'.</li>

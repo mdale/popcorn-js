@@ -142,7 +142,7 @@
 			}
 
 			playerReady = false;
-
+			
 			// Setup the embed callback:
 			embedSettings.readyCallback = function(playerId) {
 				// grab kdp object:
@@ -151,12 +151,30 @@
 				// setup listener events: ( if the player is HTML5 ) just directly map: 
 				if( kdp.evaluate('{isHTML5}') ){
 					var vid =window.frames[ playerUID + '_ifp' ].document.getElementById( 'pid_' + playerUID );
-					"loadstart progress suspend abort error emptied stalled loadedmetadata loadeddata canplay canplaythrough waiting seeking seeked ended durationchange timeupdate play pause ratechange volumechange".split(" ").forEach( function( value, index, array ) {
+					["loadstart", "progress", "suspend", "abort", "error", "emptied", 
+					 "stalled", "loadedmetadata", "loadeddata", "canplay", "canplaythrough", 
+					 "waiting", "seeking", "seeked", "ended", "durationchange", "timeupdate", 
+					 "play", "pause", "ratechange", "volumechange"].forEach( function( value, index, array ) {
 						// setup binding directly on player target
 						vid.addEventListener( value, function( event ){
-							self.dispatchEvent( event );
+							self.dispatchEvent( value );
 						}, false );
 					});
+					// also get most the properties strait from the video tag as well:
+					[ /*"error", "src", "currentSrc", */ "crossOrigin", "networkState", 
+					  "preload", "buffered", "readyState", "seeking", "currentTime", 
+					  "initialTime", "duration", "startOffsetTime", "paused", 
+					  "defaultPlaybackRate", "playbackRate", "played", "seekable", 
+					  "ended", "autoplay", "loop", "mediaGroup", "controller", "controls", 
+					  "volume", "muted", "defaultMuted", "width", "height", "videoWidth", 
+					  "videoHeight", "poster" ].forEach( function( attr ){
+							var obj ={};
+							obj[attr] = {
+								'get': function(){ return vid[attr] },
+								'set': function( aValue ){ vid[attr] = aValue }
+							}
+							Object.defineProperties( self, obj );
+					  });
 				} else {
 					// TODO improve kdp flash support.
 				}
@@ -215,7 +233,10 @@
 		
 		// Setup a player callback for defining all the mapped properties:
 		addPlayerReadyCallback( function(){
-			
+			// if in html5 mode all properties are read directly from the video tag:
+			if( kdp.evaluate('{isHTML5}') ){
+				return ;
+			}
 			Object.defineProperties( self, {
 				autoplay : {
 					get : function() {
@@ -260,9 +281,7 @@
 					},
 					set : function( aValue ) {
 						if (playerReady) {
-							var perc = aValue / self.duration;
-							debugger;
-							kdp.sendNotification('doSeek', perc);
+							kdp.sendNotification('doSeek', aValue);
 						} else {
 							impl.currentTime = aValue;
 						}
