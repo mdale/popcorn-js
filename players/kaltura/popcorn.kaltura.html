@@ -95,7 +95,12 @@
               // if omited, default production embed url is generated from kwidget swf / entry url above
               // for this demo page we use the latest "master" from html5video.org:
               // Alternativly you can just include kWidget / mwEmbedLoader in your on page script list. 
-              'kWidgetUrl': 'http://html5video.org/kaltura-player/mwEmbedLoader.php'
+              //'kWidgetUrl': 'http://html5video.org/kaltura-player/mwEmbedLoader.php',
+              'kWidgetUrl' : '/html5.kaltura/mwEmbed/mwEmbedLoader.php',
+              
+              // By default we "leadWithHTML5" for the kaltura player if you want to force flash
+              // you can set the following to false
+              'leadWithHTML5' : true
           })
           .footnote({
             start: 5,

@@ -34,7 +34,6 @@
 			error : null
 		}, kdp, playerReady = false, playerUID = Popcorn.guid(), playerReadyCallbacks = [], timeUpdateInterval, currentTimeInterval, kWidget; // kWidget
 																																				// is
-																																				// once
 		// set the player options:
 		self._options = options || {},
 		// Namespace all events we'll produce
@@ -61,6 +60,15 @@
 				}
 			}
 		});
+		/**
+		 * Sets any global kaltura config ( once kWidget is available ) 
+		 */
+		function setKalturaConfig(){
+			// By default lead with html5
+			if( typeof options.leadWithHTML5 == 'undefined' ||  options.leadWithHTML5 === true ){
+				mw.setConfig( 'KalturaSupport.LeadWithHTML5', true);
+			}
+		}
 		
 		/**
 		 * Adds a player ready callback
@@ -107,6 +115,9 @@
 								});
 				return;
 			}
+			// kWidget has been loaded set config
+			setKalturaConfig();
+			
 
 			// Get embed settings:
 			var embedSettings = kWidget.getEmbedSettings(aSrc,
@@ -137,6 +148,19 @@
 				// grab kdp object:
 				kdp = document.getElementById( playerId );
 
+				// setup listener events: ( if the player is HTML5 ) just directly map: 
+				if( kdp.evaluate('{isHTML5}') ){
+					var vid =window.frames[ playerUID + '_ifp' ].document.getElementById( 'pid_' + playerUID );
+					"loadstart progress suspend abort error emptied stalled loadedmetadata loadeddata canplay canplaythrough waiting seeking seeked ended durationchange timeupdate play pause ratechange volumechange".split(" ").forEach( function( value, index, array ) {
+						// setup binding directly on player target
+						vid.addEventListener( value, function( event ){
+							self.dispatchEvent( event );
+						}, false );
+					});
+				} else {
+					// TODO improve kdp flash support.
+				}
+				
 				// Once media is ready to be played trigger associated events
 				kdp.kBind('mediaReady', function() {
 					playerReady = true;
@@ -170,7 +194,6 @@
 				'autoPlay': impl.autoplay,
 				'loop' : impl.loop
 			}
-			
 			kWidget.embed( playerUID, embedSettings );
 		}
 
@@ -192,6 +215,7 @@
 		
 		// Setup a player callback for defining all the mapped properties:
 		addPlayerReadyCallback( function(){
+			
 			Object.defineProperties( self, {
 				autoplay : {
 					get : function() {
@@ -237,6 +261,7 @@
 					set : function( aValue ) {
 						if (playerReady) {
 							var perc = aValue / self.duration;
+							debugger;
 							kdp.sendNotification('doSeek', perc);
 						} else {
 							impl.currentTime = aValue;
