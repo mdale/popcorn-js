@@ -235,7 +235,6 @@
 						return kdp.evaluate('{video.player.currentTime}');
 					},
 					set : function( aValue ) {
-						debugger;
 						if (playerReady) {
 							var perc = aValue / self.duration;
 							kdp.sendNotification('doSeek', perc);
