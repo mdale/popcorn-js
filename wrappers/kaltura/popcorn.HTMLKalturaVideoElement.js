@@ -10,7 +10,7 @@
 	var EMPTY_STRING = '';
 
 	// Some default sizes:
-	MIN_WIDTH = 300, MIN_HEIGHT = 200;
+	MIN_WIDTH = 240, MIN_HEIGHT = 180;
 
 	function HTMLKalturaVideoElement(id, options) {
 		var self = this, parent = typeof id === "string" ? Popcorn.dom.find(id)
@@ -65,7 +65,8 @@
 		 */
 		function setKalturaConfig(){
 			// By default lead with html5
-			if( typeof options.leadWithHTML5 == 'undefined' ||  options.leadWithHTML5 === true ){
+			if( typeof self._options.leadWithHTML5 == 'undefined' ||  self._options.leadWithHTML5 === true ){
+				mw.setConfig( 'EmbedPlayer.NativeControls', true);
 				mw.setConfig( 'KalturaSupport.LeadWithHTML5', true);
 			}
 		}
@@ -90,12 +91,15 @@
 			// Load the kWidget library ( if not already set )
 			if (!window.kWidget) {
 				// replace in an embedIframeJs url if kWidgetUrl is not set
-				var src = options.kWidgetUrl
-						|| 
-					aSrc.replace(
-						'index.php\/kwidget\/cache_st\/[^\]*/wid/',
-						'p/').replace('uiconf_id\/',
-						'embedIframeJs/uiconf_id/');
+				var src = self._options.kWidgetUrl
+						||
+						// 1.7 is not on production yet once it is; substitute in the regex
+					'http://html5video.org/kaltura-player/mwEmbedLoader.php'
+					//aSrc.replace(
+					//		/index.php\/kwidget\/cache_st\/[^/]*\/wid\/_([^/]*)\/(uiconf_id\/[^/]*)\/.*/,
+					//		'p/$1/sp/$100/$2/partner_id/$1').replace('uiconf_id\/',
+					//		'embedIframeJs/uiconf_id/');
+				
 				
 				Popcorn.getScript(
 								src,
@@ -117,7 +121,6 @@
 			}
 			// kWidget has been loaded set config
 			setKalturaConfig();
-			
 
 			// Get embed settings:
 			var embedSettings = kWidget.getEmbedSettings(aSrc,
@@ -150,7 +153,9 @@
 
 				// setup listener events: ( if the player is HTML5 ) just directly map: 
 				if( kdp.evaluate('{isHTML5}') ){
+					
 					var vid =window.frames[ playerUID + '_ifp' ].document.getElementById( 'pid_' + playerUID );
+					
 					["loadstart", "progress", "suspend", "abort", "error", "emptied", 
 					 "stalled", "loadedmetadata", "loadeddata", "canplay", "canplaythrough", 
 					 "waiting", "seeking", "seeked", "ended", "durationchange", "timeupdate", 
@@ -181,6 +186,8 @@
 				
 				// Once media is ready to be played trigger associated events
 				kdp.kBind('mediaReady', function() {
+					// if we have not already done so dispatch "loadeddata"
+					self.dispatchEvent( "loadeddata" );
 					playerReady = true;
 					// run any playerReadyCallbacks
 					while( playerReadyCallbacks.length ){
@@ -228,6 +235,12 @@
 		self.pause = function() {
 			if( kdp ){
 				kdp.sendNotification('doPause');
+			}
+		}
+		self.requestFullScreen = function(){
+			if( kdp ){
+				var embedPlayer = window.frames[ playerUID + '_ifp' ].document.getElementById( playerUID );
+				embedPlayer.fullscreen();
 			}
 		}
 		

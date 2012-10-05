@@ -1,29 +1,9 @@
 asyncTest( "Options Check", function() {
-
-  expect( 7 );
-  var varz = {
-      title: 0,
-      byline: 0,
-      portrait:0,
-      autoplay:1,
-      loop:1,
-      color: "FFAADD",
-      fullscreen: 0
-    },
-    p2 = Popcorn.vimeo( "#player_1", "http://vimeo.com/11336811", varz );
+  expect( 1 );
+  var p2 = Popcorn.kaltura( "#player_1", "http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" )
 
   p2.listen( "loadeddata", function() {
-    var flashvars = $( 'param[name="flashvars"]' ).attr( "value" );
-
-    var splitvars = flashvars.split( "&" );
-
-    for ( var i = 0, len = splitvars.length; i < len; i++ ) {
-      var item = splitvars[ i ].split( "=" );
-      if ( varz.hasOwnProperty( item[ 0 ] ) ) {
-        equal( varz[ item[ 0 ] ], item[ 1 ], item[ 0 ] + " is the expected value" );
-      }
-    }
-
+	ok( true, "loadeddata fired ");
     start();
   });
 
@@ -31,7 +11,7 @@ asyncTest( "Options Check", function() {
 
 asyncTest( "Update Timer", function() {
 
-  var p2 = Popcorn.vimeo( "#player_1", "http://player.vimeo.com/video/11336811" ),
+  var p2 = Popcorn.kaltura( "#player_1", "http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" ),
       expects = 17,
       count = 0,
       execCount = 0,
@@ -226,7 +206,7 @@ asyncTest( "Update Timer", function() {
 
 asyncTest( "Plugin Factory", function() {
 
-  var popped = Popcorn.vimeo( "#player_1", "http://player.vimeo.com/video/11336811" ),
+  var popped = Popcorn.kaltura( "#player_1", "http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" ),
       methods = "load play pause currentTime mute volume roundTime exec removePlugin",
 
       // 15*2+2+2. executor/complicator each do 15
@@ -342,7 +322,7 @@ asyncTest( "Plugin Factory", function() {
 
 });
 
-asyncTest( "Popcorn vimeo Plugin Url and Duration Tests", function() {
+asyncTest( "Popcorn kaltura Plugin Url and Duration Tests", function() {
   function plus() {
     if ( ++count == expects ) {
       popcorn.pause();
@@ -352,7 +332,7 @@ asyncTest( "Popcorn vimeo Plugin Url and Duration Tests", function() {
 
   var count = 0,
       expects = 3,
-      popcorn = Popcorn.vimeo( "#player_1", "http://player.vimeo.com/video/11336811" );
+      popcorn = Popcorn.kaltura( "#player_1", "http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" );
 
   expect( expects );
 
@@ -372,16 +352,16 @@ asyncTest( "Popcorn vimeo Plugin Url and Duration Tests", function() {
   popcorn.play();
 });
 
-asyncTest( "Popcorn vimeo Plugin Url Regex Test", function() {
+asyncTest( "Popcorn kaltura Plugin Url Regex Test", function() {
 
   var urlTests = [
     { name: "standard",
-      url: "http://player.vimeo.com/video/11336811",
-      expected: "http://player.vimeo.com/video/11336811"
+      url: "http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4",
+      expected: "http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4"
     },
     { name: "short url",
-      url: "http://vimeo.com/11336811",
-      expected: "http://vimeo.com/11336811"
+      url: "http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4",
+      expected: "http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4"
     }
   ];
 
@@ -393,7 +373,7 @@ asyncTest( "Popcorn vimeo Plugin Url Regex Test", function() {
   Popcorn.forEach( urlTests, function( values, key ) {
 
     var urlTest = urlTests[ key ],
-        popcorn = Popcorn.vimeo( "#player_2", urlTest.url );
+        popcorn = Popcorn.kaltura( "#player_2", urlTest.url );
 
     popcorn.listen( "loadeddata", function() {
 
@@ -410,7 +390,7 @@ asyncTest( "Popcorn vimeo Plugin Url Regex Test", function() {
   });
 });
 
-asyncTest( "Popcorn Vimeo Plugin offsetHeight && offsetWidth Test", function() {
+asyncTest( "Popcorn kaltura Plugin offsetHeight && offsetWidth Test", function() {
 
   var popped,
       elem,
@@ -424,7 +404,7 @@ asyncTest( "Popcorn Vimeo Plugin offsetHeight && offsetWidth Test", function() {
       start();
     }
   }
-  popped = Popcorn.vimeo( "#player_3", "http://player.vimeo.com/video/11336811" );
+  popped = Popcorn.kaltura( "#player_3", "http://www.kaltura.com/index.php/kwidget/cache_st/1292436446/wid/_243342/uiconf_id/2877502/entry_id/0_uka1msg4" );
 
   popped.listen( "loadeddata", function() {
     elem = document.querySelector( "div#player_3 object" );
